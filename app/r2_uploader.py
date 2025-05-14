@@ -28,11 +28,17 @@ s3 = boto3.client(
 
 def upload_image_to_r2(image, uid):
     try:
+        if not image or not image.file:
+            raise ValueError("Archivo vacío o no válido")
+
         timestamp = (datetime.now(timezone.utc) - timedelta(hours=5)).strftime("%Y%m%d%H%M%S")
         filename = f"{uid}_{timestamp}.jpg"
-        print("⬆️ Subiendo a R2:", filename)
 
-        # Esta línea sube el archivo
+        print("⬆️ Subiendo a R2:", filename)
+        print("📦 image.filename:", image.filename)
+        print("📦 image.file:", image.file)
+        print("📦 image.content_type:", image.content_type)
+
         s3.upload_fileobj(image.file, BUCKET_NAME, filename)
 
         url = f"https://imagenes.asistenciapcte.com/{filename}"
@@ -42,4 +48,5 @@ def upload_image_to_r2(image, uid):
     except Exception as e:
         print("❌ Error subiendo imagen:", e)
         raise
+
 
