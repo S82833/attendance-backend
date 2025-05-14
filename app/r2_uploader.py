@@ -27,6 +27,11 @@ s3 = boto3.client(
 )
 
 def upload_image_to_r2(image, uid):
+    print("🔑 BUCKET_NAME:", BUCKET_NAME)
+    print("🔑 ACCOUNT_ID:", ACCOUNT_ID)
+    print("🔑 ACCESS_KEY:", ACCESS_KEY)
+    print("🔑 SECRET_KEY:", SECRET_KEY)
+
     try:
         if not image or not image.file:
             raise ValueError("Archivo vacío o no válido")
