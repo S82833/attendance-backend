@@ -4,7 +4,6 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 from botocore.config import Config
 from datetime import timedelta
-from io import BytesIO
 
 load_dotenv()
 
@@ -27,11 +26,9 @@ s3 = boto3.client(
     config=Config(signature_version='s3v4'),
 )
 
-from io import BytesIO
-
-async def upload_image_to_r2(image, uid):
+def upload_image_to_r2(image, uid):
     try:
-        if not image:
+        if not image or not image.file:
             raise ValueError("Archivo vacío o no válido")
 
         timestamp = (datetime.now(timezone.utc) - timedelta(hours=5)).strftime("%Y%m%d%H%M%S")
@@ -40,17 +37,29 @@ async def upload_image_to_r2(image, uid):
         print("⬆️ Subiendo a R2:", filename)
         print("📦 image.filename:", image.filename)
         print("📦 image.content_type:", image.content_type)
-        print("ultima version")
 
-        # ✅ leer correctamente
-        image_content = await image.read()
-        if not image_content:
-            raise ValueError("Contenido de la imagen vacío")
+        # 🔍 VERIFICACIONES CRÍTICAS
+        print("🧪 image.file:", image.file)
+        print("🧪 image.file.closed:", image.file.closed)
+        try:
+            print("🧪 image.file.tell():", image.file.tell())
+        except Exception as e:
+            print("🧪 Error al llamar tell():", e)
 
-        image_bytes = BytesIO(image_content)
-        image_bytes.seek(0)
+        # 🔄 Volver al inicio del archivo (importante)
+        image.file.seek(0)
 
-        s3.upload_fileobj(image_bytes, BUCKET_NAME, filename)
+        # 🧪 PROBAMOS LEER PRIMERO
+        try:
+            chunk = image.file.read(10)
+            print("🧪 Primeros 10 bytes:", chunk)
+            image.file.seek(0)
+        except Exception as e:
+            print("🧪 Error al leer el archivo:", e)
+            raise
+
+        # 🔼 Subir a R2
+        s3.upload_fileobj(image.file, BUCKET_NAME, filename)
 
         url = f"https://imagenes.asistenciapcte.com/{filename}"
         print("✅ Imagen subida, URL generado:", url)
@@ -59,6 +68,7 @@ async def upload_image_to_r2(image, uid):
     except Exception as e:
         print("❌ Error subiendo imagen:", e)
         raise
+
 
 
 

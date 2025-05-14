@@ -25,7 +25,7 @@ async def create_attendance(
     image: UploadFile = File(...)
 ):
     try:
-        image_url = await upload_image_to_r2(image, uid)
+        image_url = upload_image_to_r2(image, uid)
 
         save_attendance(
             uid=uid,
