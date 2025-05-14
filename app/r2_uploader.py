@@ -27,9 +27,11 @@ s3 = boto3.client(
     config=Config(signature_version='s3v4'),
 )
 
-def upload_image_to_r2(image, uid):
+from io import BytesIO
+
+async def upload_image_to_r2(image, uid):
     try:
-        if not image or not image.file:
+        if not image:
             raise ValueError("Archivo vacío o no válido")
 
         timestamp = (datetime.now(timezone.utc) - timedelta(hours=5)).strftime("%Y%m%d%H%M%S")
@@ -37,11 +39,15 @@ def upload_image_to_r2(image, uid):
 
         print("⬆️ Subiendo a R2:", filename)
         print("📦 image.filename:", image.filename)
-        print("📦 image.file:", image.file)
         print("📦 image.content_type:", image.content_type)
+        print("ultima version")
 
-        # 🧠 Solución segura: leer y envolver en BytesIO
-        image_bytes = BytesIO(image.file.read())
+        # ✅ leer correctamente
+        image_content = await image.read()
+        if not image_content:
+            raise ValueError("Contenido de la imagen vacío")
+
+        image_bytes = BytesIO(image_content)
         image_bytes.seek(0)
 
         s3.upload_fileobj(image_bytes, BUCKET_NAME, filename)
@@ -53,5 +59,6 @@ def upload_image_to_r2(image, uid):
     except Exception as e:
         print("❌ Error subiendo imagen:", e)
         raise
+
 
 
