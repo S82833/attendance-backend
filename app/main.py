@@ -25,12 +25,13 @@ async def create_attendance(
     image: UploadFile = File(...)
 ):
     try:
-        image_url = upload_image_to_r2(image, uid)
+        timestamp = datetime.now(timezone.utc) - timedelta(hours=5)
+        image_url = upload_image_to_r2(image, uid, timestamp)
 
         save_attendance(
             uid=uid,
             image_url=image_url,
-            timestamp=datetime.now(timezone.utc) - timedelta(hours=5),
+            timestamp=timestamp,
             location={"lat": lat, "lng": lng}
         )
 

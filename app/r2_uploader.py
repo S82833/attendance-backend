@@ -26,42 +26,18 @@ s3 = boto3.client(
     config=Config(signature_version='s3v4'),
 )
 
-def upload_image_to_r2(image, uid):
-    print("🔑 BUCKET_NAME:", BUCKET_NAME)
-    print("🔑 ACCOUNT_ID:", ACCOUNT_ID)
-    print("🔑 ACCESS_KEY:", ACCESS_KEY)
-    print("🔑 SECRET_KEY:", SECRET_KEY)
-
+def upload_image_to_r2(image, uid, timestamp):
     try:
         if not image or not image.file:
             raise ValueError("Archivo vacío o no válido")
 
-        timestamp = (datetime.now(timezone.utc) - timedelta(hours=5)).strftime("%Y%m%d%H%M%S")
-        filename = f"{uid}_{timestamp}.jpg"
-
-        print("⬆️ Subiendo a R2:", filename)
-        print("📦 image.filename:", image.filename)
-        print("📦 image.content_type:", image.content_type)
-
-        # 🔍 VERIFICACIONES CRÍTICAS
-        print("🧪 image.file:", image.file)
-        print("🧪 image.file.closed:", image.file.closed)
-        try:
-            print("🧪 image.file.tell():", image.file.tell())
-        except Exception as e:
-            print("🧪 Error al llamar tell():", e)
+        filename = f"{uid}_{timestamp.strftime('%Y%m%d%H%M%S')}.jpg"
 
         # 🔄 Volver al inicio del archivo (importante)
         image.file.seek(0)
 
         # 🧪 PROBAMOS LEER PRIMERO
-        try:
-            chunk = image.file.read(10)
-            print("🧪 Primeros 10 bytes:", chunk)
-            image.file.seek(0)
-        except Exception as e:
-            print("🧪 Error al leer el archivo:", e)
-            raise
+        image.file.seek(0)
 
         # 🔼 Subir a R2
         s3.upload_fileobj(image.file, BUCKET_NAME, filename)
