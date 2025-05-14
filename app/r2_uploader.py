@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 from botocore.config import Config
 from datetime import timedelta
+from io import BytesIO
 
 load_dotenv()
 
@@ -38,9 +39,12 @@ def upload_image_to_r2(image, uid):
         print("📦 image.filename:", image.filename)
         print("📦 image.file:", image.file)
         print("📦 image.content_type:", image.content_type)
-        image.file.seek(0)
 
-        s3.upload_fileobj(image.file, BUCKET_NAME, filename)
+        # 🧠 Solución segura: leer y envolver en BytesIO
+        image_bytes = BytesIO(image.file.read())
+        image_bytes.seek(0)
+
+        s3.upload_fileobj(image_bytes, BUCKET_NAME, filename)
 
         url = f"https://imagenes.asistenciapcte.com/{filename}"
         print("✅ Imagen subida, URL generado:", url)
