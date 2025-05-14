@@ -38,6 +38,7 @@ def upload_image_to_r2(image, uid):
         print("📦 image.filename:", image.filename)
         print("📦 image.file:", image.file)
         print("📦 image.content_type:", image.content_type)
+        image.file.seek(0)
 
         s3.upload_fileobj(image.file, BUCKET_NAME, filename)
 
