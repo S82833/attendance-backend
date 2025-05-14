@@ -14,7 +14,7 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     cred = credentials.Certificate(cred_path)
 else:
     # Estás en Render: usa JSON desde variable
-    firebase_credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    firebase_credentials = os.getenv("FIREBASE_APPLICATION_CREDENTIALS")
     cred_dict = json.loads(firebase_credentials)
     cred = credentials.Certificate(cred_dict)
 
