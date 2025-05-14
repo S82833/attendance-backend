@@ -8,8 +8,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-cred = credentials.Certificate(cred_path)
+if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+    # Estás en local
+    cred_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    cred = credentials.Certificate(cred_path)
+else:
+    # Estás en Render: usa JSON desde variable
+    firebase_credentials = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    cred_dict = json.loads(firebase_credentials)
+    cred = credentials.Certificate(cred_dict)
+
 initialize_app(cred)
 
 db = firestore.client()
