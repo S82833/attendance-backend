@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: attendance-backend
+    runtime: python
+    buildCommand: ""
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000
+    envVars:
+      - key: R2_ACCESS_KEY_
+        fromEnvVar: f3f903b17e43ba20e045841a5013613a
+      - key: R2_SECRET_ACCESS_KEY
+        fromEnvVar: 55a01aebab44a6e85abc4186fefb7dc03502d4cd8dfa7ab6bd425d46a0a2b57d
+      - key: R2_BUCKET_NAME
+        fromEnvVar: asistencia-pcte
+      - key: R2_ACCOUNT_ID
+        fromEnvVar: e0b010685e0976f490e0a7a50980f152
+
