@@ -22,13 +22,14 @@ initialize_app(cred)
 
 db = firestore.client()
 
-def save_attendance(uid: str, image_url: str, timestamp: datetime, location: dict):
+def save_attendance(uid: str, image_url: str, timestamp: datetime, location: dict, entradaSalida: str):
     try:
         attendance_data = {
             "user_id": uid,
             "timestamp": timestamp,
             "photo_url": image_url,
-            "location": GeoPoint(location["lat"], location["lng"])
+            "location": GeoPoint(location["lat"], location["lng"]),
+            "entradaSalida": entradaSalida
         }
         db.collection("attendances").add(attendance_data)
     except Exception as e:

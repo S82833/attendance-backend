@@ -22,7 +22,8 @@ async def create_attendance(
     uid: str = Form(...),
     lat: float = Form(...),
     lng: float = Form(...),
-    image: UploadFile = File(...)
+    image: UploadFile = File(...),
+    entradaSalida: str = Form(...)
 ):
     try:
         timestamp = datetime.now(timezone.utc) - timedelta(hours=5)
@@ -32,7 +33,8 @@ async def create_attendance(
             uid=uid,
             image_url=image_url,
             timestamp=timestamp,
-            location={"lat": lat, "lng": lng}
+            location={"lat": lat, "lng": lng},
+            entradaSalida=entradaSalida
         )
 
         return {"status": "ok", "image_url": image_url}
