@@ -50,7 +50,8 @@ def get_all_attendances():
             "location": {
                 "lat": data["location"].latitude if data.get("location") else None,
                 "lng": data["location"].longitude if data.get("location") else None
-            }
+            },
+            "entradaSalida": data.get("entradaSalida")
         })
 
     return results
